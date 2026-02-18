@@ -1,6 +1,5 @@
 generator client {
-  provider = "prisma-client"
-  output   = "../src/generated/prisma"
+  provider = "prisma-client-js"
 }
 
 datasource db {
@@ -33,3 +32,4 @@ enum BookingStatus {
   CONFIRMED
   CANCELLED
 }
+
