@@ -6,3 +6,75 @@ export async function CreateBooking(bookingInput:Prisma.BookingCreateInput) {
     })
     return booking;
 }
+export async function createIdempotencyKey(key:string,bookingId:number){
+    const idempotencyKey=await PrismaClient.idempotencyKey.create({
+        data:{
+            idemKey:key,
+            booking:{
+                connect:{id:bookingId}
+            }
+        }
+    })
+    return idempotencyKey;
+}
+export async function getIdempotencyKey(key:string){
+    const idempotencyKey=await PrismaClient.idempotencyKey.findUnique({
+        where :{
+            idemKey:key
+        }
+    })
+    return idempotencyKey;
+}
+
+export async function getBookingById(bookingId:number){
+    const booking=await PrismaClient.booking.findUnique({
+        where:{
+            id:bookingId           
+        }   
+     })
+    return booking;
+}
+export async function finalizeBooking(bookingId:number,status:Prisma.EnumBookingStatusFieldUpdateOperationsInput){
+    const booking=await PrismaClient.booking.update({
+        where:{
+            id:bookingId           
+        },
+        data:{
+            status:status
+        }
+     })
+    return booking;
+}
+export async function confirmBooking(bookingId:number){
+    const booking=await PrismaClient.booking.update({
+        where:{
+            id:bookingId           
+        },
+        data:{
+            status:"CONFIRMED"
+        }
+     })
+    return booking;
+}
+export async function cancelBooking(bookingId:number){
+    const booking=await PrismaClient.booking.update({
+        where:{
+            id:bookingId           
+        },
+        data:{
+            status:"CANCELLED"
+        }
+     })
+    return booking;
+}   
+export async function finalizeIdempotencyKey(key:string){
+    const idempotencyKey=await PrismaClient.idempotencyKey.update({
+        where :{
+            idemKey:key
+        },
+        data:{
+            finalized:true
+        }
+    })
+    return idempotencyKey;
+}

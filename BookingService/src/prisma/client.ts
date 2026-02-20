@@ -1,4 +1,14 @@
+import "dotenv/config";
 import { PrismaClient } from '@prisma/client';
+import { PrismaMariaDb } from "@prisma/adapter-mariadb";
 
-export default new PrismaClient();
+const databaseUrl = process.env.DATABASE_URL;
+
+if (!databaseUrl) {
+    throw new Error("DATABASE_URL is not set");
+}
+
+const adapter = new PrismaMariaDb(databaseUrl);
+
+export default new PrismaClient({ adapter });
 
