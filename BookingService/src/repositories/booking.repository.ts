@@ -1,5 +1,6 @@
-import { Prisma } from "@prisma/client";
+import { Prisma,IdempotencyKey } from "@prisma/client";
 import PrismaClient from "../prisma/client";
+import {validate as IsvalidUUID} from "uuid";
 export async function CreateBooking(bookingInput:Prisma.BookingCreateInput) {
     const booking=await PrismaClient.booking.create({
         data:bookingInput
@@ -17,13 +18,20 @@ export async function createIdempotencyKey(key:string,bookingId:number){
     })
     return idempotencyKey;
 }
-export async function getIdempotencyKey(key:string){
-    const idempotencyKey=await PrismaClient.idempotencyKey.findUnique({
-        where :{
-            idemKey:key
-        }
-    })
-    return idempotencyKey;
+export async function getIdempotencyKeywithlock(tx:Prisma.TransactionClient,key:string){
+    if(!IsvalidUUID(key)){
+        throw new Error("Invalid idempotency key");
+    }
+    const idempotencyKey:Array<IdempotencyKey>=await tx.$queryRaw `SELECT * FROM IdempotencyKey WHERE idemKey=${key} FOR UPDATE`
+
+    console.log("Idempotency key with lock",idempotencyKey);
+    
+
+    if(idempotencyKey.length===0||!idempotencyKey){
+        throw new Error("Idempotency key not found");
+    }
+
+    return idempotencyKey[0];
 }
 
 export async function getBookingById(bookingId:number){
@@ -45,8 +53,8 @@ export async function finalizeBooking(bookingId:number,status:Prisma.EnumBooking
      })
     return booking;
 }
-export async function confirmBooking(bookingId:number){
-    const booking=await PrismaClient.booking.update({
+export async function confirmBooking(tx:Prisma.TransactionClient,bookingId:number){
+    const booking=await tx.booking.update({
         where:{
             id:bookingId           
         },
@@ -67,8 +75,8 @@ export async function cancelBooking(bookingId:number){
      })
     return booking;
 }   
-export async function finalizeIdempotencyKey(key:string){
-    const idempotencyKey=await PrismaClient.idempotencyKey.update({
+export async function finalizeIdempotencyKey(tx:Prisma.TransactionClient,key:string){
+    const idempotencyKey=await tx.idempotencyKey.update({
         where :{
             idemKey:key
         },
@@ -78,3 +86,4 @@ export async function finalizeIdempotencyKey(key:string){
     })
     return idempotencyKey;
 }
+
