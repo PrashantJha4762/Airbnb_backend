@@ -16,11 +16,11 @@ app.listen(serverconfig.port,async()=>{
     setupMailWorker();
     logger.info(`Server is running at ${serverconfig.port}`);
     addEmailToQueue({
-        to:"jhaprashant0804@gmail.com",
+        to:"futurepolymath01@gmail.com",
         subject:"Test Email from Notification Service",
         templateId:"welcome",
         params:{
-            username:"John Doe",
+            username:"Saumya",
             appname:"Airbnb"
         }    
     })
