@@ -9,6 +9,5 @@ import (
 func SetUpRouter() *chi.Mux {
 	router:=chi.NewRouter();
 	router.Get("/ping",controllers.PingHandler)
-
 	return router;
 }
