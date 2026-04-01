@@ -15,6 +15,22 @@ type UserRepositoryImpl struct {
 	db *sql.DB
 }
 func (u *UserRepositoryImpl) Create()(*models.User, error){
+	query:="INSERT INTO users(username,email,password) VALUES(?,?,?)"
+	result,err:=u.db.Exec(query,"testuser","test@gmail.com","password123")
+	if err!=nil{
+		fmt.Println("Error inserting user",err)
+		return nil, err
+	}
+	rowAffected,rowError:=result.RowsAffected()
+	if rowError!=nil{
+		fmt.Println("Error getting rows effected",rowError)
+		return nil,rowError
+	}
+	if rowAffected==0{
+		fmt.Println("No rows were effected")
+		return nil,nil
+	}
+	fmt.Println("Users created successfully",rowAffected)
 	return nil,nil
 }
 
