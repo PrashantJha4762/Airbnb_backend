@@ -2,11 +2,12 @@ package services
 
 import (
 	db "AuthInGo/db/repositories"
+	"AuthInGo/models"
 	"fmt"
 )
 
 type UserService interface {
-	CreateUser() error
+	GetUserById(id string) (*models.User, error)
 }
 type UserServiceImpl struct {
 	userRepository db.UserRepository 
@@ -17,8 +18,12 @@ func NewUserService(_userRepository db.UserRepository) UserService {
 		userRepository: _userRepository,
 	}
 }
-func (u *UserServiceImpl) CreateUser() error {
-	fmt.Println("Creating user in UserService")
-	u.userRepository.Create()
-	return nil
+func (u *UserServiceImpl) GetUserById(id string) (*models.User, error) {
+	fmt.Println("Fetching user in UserService")
+	user, err := u.userRepository.GetByID(id)
+	if err != nil {
+		fmt.Println("Error fetching user:", err)
+		return nil, err
+	}
+	return user, nil
 }
