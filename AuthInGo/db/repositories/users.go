@@ -8,10 +8,14 @@ import (
 
 type UserRepository interface {
 	GetByID(id string) (*models.User, error)
+	Create()(*models.User, error)
 }
 
 type UserRepositoryImpl struct {
 	db *sql.DB
+}
+func (u *UserRepositoryImpl) Create()(*models.User, error){
+	return nil,nil
 }
 
 func (u *UserRepositoryImpl) GetByID(id string) (*models.User, error) {
