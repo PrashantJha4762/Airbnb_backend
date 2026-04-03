@@ -1,11 +1,11 @@
 package db
 
-type Storage struct{
+type Storage struct {
 	UserRepository UserRepository
 }
 
-func NewStorage() *Storage{
+func NewStorage() *Storage {
 	return &Storage{
-		UserRepository: &UserRepositoryImpl{},
+		UserRepository: nil,
 	}
 }
