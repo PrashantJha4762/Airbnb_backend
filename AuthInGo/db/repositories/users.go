@@ -8,7 +8,7 @@ import (
 
 type UserRepository interface {
 	GetByID(id string) (*models.User, error)
-	Create() (*models.User, error)
+	Create(username string,email string, password string) error
 	GetAll() ([]*models.User, error)
 	DeleteById(id int64) error
 }
@@ -17,24 +17,24 @@ type UserRepositoryImpl struct {
 	db *sql.DB
 }
 
-func (u *UserRepositoryImpl) Create() (*models.User, error) {
+func (u *UserRepositoryImpl) Create(username string, email string,hashpwd string) error {
 	query := "INSERT INTO users(username,email,password) VALUES(?,?,?)"
-	result, err := u.db.Exec(query, "testuser", "test@gmail.com", "password123")
+	result, err := u.db.Exec(query,username,email,hashpwd)
 	if err != nil {
 		fmt.Println("Error inserting user", err)
-		return nil, err
+		return err
 	}
 	rowAffected, rowError := result.RowsAffected()
 	if rowError != nil {
 		fmt.Println("Error getting rows effected", rowError)
-		return nil, rowError
+		return rowError
 	}
 	if rowAffected == 0 {
 		fmt.Println("No rows were effected")
-		return nil, nil
+		return nil
 	}
 	fmt.Println("Users created successfully", rowAffected)
-	return nil, nil
+	return nil
 }
 
 func (u *UserRepositoryImpl) GetByID(id string) (*models.User, error) {

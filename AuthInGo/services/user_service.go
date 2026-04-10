@@ -3,11 +3,13 @@ package services
 import (
 	db "AuthInGo/db/repositories"
 	"AuthInGo/models"
+	"AuthInGo/utils"
 	"fmt"
 )
 
 type UserService interface {
 	GetUserById(id string) (*models.User, error)
+	CreateUser() error
 }
 type UserServiceImpl struct {
 	userRepository db.UserRepository 
@@ -26,4 +28,14 @@ func (u *UserServiceImpl) GetUserById(id string) (*models.User, error) {
 		return nil, err
 	}
 	return user, nil
+}
+func (u *UserServiceImpl) CreateUser() error{
+	pwd:="abx123"
+	hashpwd,herr:=utils.Hashedpasswords(pwd)
+	if herr != nil {
+		fmt.Println("Error while creating the user")
+		return herr
+	}
+	u.userRepository.Create("Yahoo","yahoo@gmail.com",hashpwd)
+	return nil
 }
