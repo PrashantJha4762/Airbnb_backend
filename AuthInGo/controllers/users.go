@@ -15,7 +15,11 @@ func NewUserController(_userService services.UserService) *UserController{
 	}
 }
 
-func (uc *UserController) RegisterUser(w http.ResponseWriter, r *http.Request) {
+func (uc *UserController) GetUserById(w http.ResponseWriter, r *http.Request) {
 	_, _ = uc.UserService.GetUserById("")
 	w.Write([]byte("User fetching endpoint"))
+}
+func (uc *UserController) CreateUser(w http.ResponseWriter, r *http.Request) {
+	w.Write([]byte("User Creating endpoint"))
+	uc.UserService.CreateUser()
 }
