@@ -41,8 +41,6 @@ func (u *UserServiceImpl) CreateUser() error{
 	return nil
 }
 func (u *UserServiceImpl)LoginUser() error{
-	pwd:="abx123"
-	response:=utils.Comparepasswords(pwd,"$2a$10$MevjZ17dnhK7WUPvcKShe.EgjBNfl3LLkfdjLb.deKgGr.jCLlkzO")
-	fmt.Println("Login Use response is",response)
+	fmt.Println("Login user in UserService")
 	return nil
 }
