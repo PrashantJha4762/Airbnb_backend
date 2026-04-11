@@ -42,5 +42,20 @@ func (u *UserServiceImpl) CreateUser() error{
 }
 func (u *UserServiceImpl)LoginUser() error{
 	fmt.Println("Login user in UserService")
-	return nil
+	email:="def@gmail.com"
+	passwd:="kyahaalh"
+	user,err:=u.userRepository.GetByEmail(email)
+	if err!=nil{
+		fmt.Println("Error fetching the details with the email")
+		return fmt.Errorf("No user found with the email:%s",email)
+	}
+	if user==nil{
+		fmt.Println("No user found with the corresponding email")
+	}
+	if !utils.Comparepasswords(passwd,user.Password){
+		fmt.Println("Invalid password")
+		fmt.Errorf("Invalid password for the email : %s",email)
+	}
+	fmt.Println("User has been found and jwt token will be created")
+	return nil;
 }
