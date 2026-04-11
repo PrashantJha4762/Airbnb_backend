@@ -13,3 +13,7 @@ func Hashedpasswords(pwd string) (string ,error) {
 	}
 	return string(hashedpwd),nil
 }
+func Comparepasswords(plain_pwd string,hashed_pwd string)bool{
+	err:=bcrypt.CompareHashAndPassword([]byte(plain_pwd),[]byte(hashed_pwd))
+	return err==nil
+}
