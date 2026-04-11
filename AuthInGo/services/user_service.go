@@ -10,6 +10,7 @@ import (
 type UserService interface {
 	GetUserById(id string) (*models.User, error)
 	CreateUser() error
+	LoginUser() error
 }
 type UserServiceImpl struct {
 	userRepository db.UserRepository 
@@ -37,5 +38,11 @@ func (u *UserServiceImpl) CreateUser() error{
 		return herr
 	}
 	u.userRepository.Create("Yahoo","yahoo@gmail.com",hashpwd)
+	return nil
+}
+func (u *UserServiceImpl)LoginUser() error{
+	pwd:="abx123"
+	response:=utils.Comparepasswords(pwd,"$2a$10$MevjZ17dnhK7WUPvcKShe.EgjBNfl3LLkfdjLb.deKgGr.jCLlkzO")
+	fmt.Println("Login Use response is",response)
 	return nil
 }

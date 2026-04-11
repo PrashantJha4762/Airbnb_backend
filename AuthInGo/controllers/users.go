@@ -2,6 +2,7 @@ package controllers
 
 import (
 	"AuthInGo/services"
+	"fmt"
 	"net/http"
 )
 
@@ -22,4 +23,9 @@ func (uc *UserController) GetUserById(w http.ResponseWriter, r *http.Request) {
 func (uc *UserController) CreateUser(w http.ResponseWriter, r *http.Request) {
 	w.Write([]byte("User Creating endpoint"))
 	uc.UserService.CreateUser()
+}
+func (uc *UserController) LoginUser(w http.ResponseWriter, r *http.Request) {
+	fmt.Println("Login User Service is called")
+	uc.UserService.LoginUser()
+	w.Write([]byte("Login endpoint Done "))
 }
