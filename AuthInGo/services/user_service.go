@@ -12,7 +12,7 @@ import (
 type UserService interface {
 	GetUserById(id string) (*models.User, error)
 	CreateUser() error
-	LoginUser() error
+	LoginUser() (string,error)
 }
 type UserServiceImpl struct {
 	userRepository db.UserRepository 
@@ -42,21 +42,21 @@ func (u *UserServiceImpl) CreateUser() error{
 	u.userRepository.Create("Yahoo","yahoo@gmail.com",hashpwd)
 	return nil
 }
-func (u *UserServiceImpl)LoginUser() error{
+func (u *UserServiceImpl)LoginUser() (string,error){
 	fmt.Println("Login user in UserService")
 	email:="yahoo@gmail.com"
 	passwd:="abx123"
 	user,err:=u.userRepository.GetByEmail(email)
 	if err!=nil{
 		fmt.Println("Error fetching the details with the email")
-		return fmt.Errorf("No user found with the email:%s",email)
+		return "", fmt.Errorf("No user found with the email:%s",email)
 	}
 	if user==nil{
 		fmt.Println("No user found with the corresponding email")
 	}
 	if !utils.Comparepasswords(passwd,user.Password){
 		fmt.Println("Invalid password")
-		return fmt.Errorf("Invalid password for the email : %s",email)
+		return "", fmt.Errorf("Invalid password for the email : %s",email)
 	}
 	payload:=jwt.MapClaims{
 		"email":user.Email,
@@ -67,8 +67,7 @@ func (u *UserServiceImpl)LoginUser() error{
 	tokenstring,tokenerr:=token.SignedString([]byte(env.GetString("JWT_SECRET","TOKEN")))
 	if tokenerr!=nil{
 		fmt.Println("Error signing token",tokenerr)
-		return tokenerr
+		return "",tokenerr
 	}
-	fmt.Println("Jwt Token :",tokenstring)
-	return nil;
+	return tokenstring,nil;
 }
