@@ -3,8 +3,18 @@ package utils
 import (
 	"encoding/json"
 	"net/http"
+	 "github.com/go-playground/validator/v10"
 )
 
+var Validator *validator.Validate
+
+func init(){
+	Validator=NewValidator()
+}
+
+func NewValidator()*validator.Validate{
+	return validator.New(validator.WithRequiredStructEnabled())
+}
 func WriteJsonResponse(w http.ResponseWriter,status int,data any) error{
 	w.Header().Set("Content Type","Application/Json")
 	w.WriteHeader(status)
