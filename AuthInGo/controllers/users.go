@@ -42,7 +42,7 @@ func (uc *UserController) LoginUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	token,err:=uc.UserService.LoginUser()
+	token,err:=uc.UserService.LoginUser(&payload)
 	if err!=nil{
 		w.Write([]byte("Something went wrong "))
 	}

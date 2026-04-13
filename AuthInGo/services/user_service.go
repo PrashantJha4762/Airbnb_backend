@@ -1,18 +1,20 @@
 package services
 
 import (
+	env "AuthInGo/config/env"
 	db "AuthInGo/db/repositories"
+	"AuthInGo/dto"
 	"AuthInGo/models"
 	"AuthInGo/utils"
 	"fmt"
-	env "AuthInGo/config/env"
+
 	"github.com/golang-jwt/jwt/v5"
 )
 
 type UserService interface {
 	GetUserById(id string) (*models.User, error)
 	CreateUser() error
-	LoginUser() (string,error)
+	LoginUser(payload *dto.LoginUserRequestDTO) (string,error)
 }
 type UserServiceImpl struct {
 	userRepository db.UserRepository 
@@ -42,10 +44,10 @@ func (u *UserServiceImpl) CreateUser() error{
 	u.userRepository.Create("Yahoo","yahoo@gmail.com",hashpwd)
 	return nil
 }
-func (u *UserServiceImpl)LoginUser() (string,error){
+func (u *UserServiceImpl)LoginUser(payload *dto.LoginUserRequestDTO) (string,error){
 	fmt.Println("Login user in UserService")
-	email:="yahoo@gmail.com"
-	passwd:="abx123"
+	email:=payload.Email
+	passwd:=payload.Password
 	user,err:=u.userRepository.GetByEmail(email)
 	if err!=nil{
 		fmt.Println("Error fetching the details with the email")
@@ -58,11 +60,11 @@ func (u *UserServiceImpl)LoginUser() (string,error){
 		fmt.Println("Invalid password")
 		return "", fmt.Errorf("Invalid password for the email : %s",email)
 	}
-	payload:=jwt.MapClaims{
+	jwtpayload:=jwt.MapClaims{
 		"email":user.Email,
 		"id":user.Id,
 	}
-	token:=jwt.NewWithClaims(jwt.SigningMethodHS256,payload)
+	token:=jwt.NewWithClaims(jwt.SigningMethodHS256,jwtpayload)
 
 	tokenstring,tokenerr:=token.SignedString([]byte(env.GetString("JWT_SECRET","TOKEN")))
 	if tokenerr!=nil{
