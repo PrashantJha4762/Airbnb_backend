@@ -23,9 +23,19 @@ func (uc *UserController) GetUserById(w http.ResponseWriter, r *http.Request) {
 	w.Write([]byte("User fetching endpoint"))
 }
 func (uc *UserController) CreateUser(w http.ResponseWriter, r *http.Request) {
-	w.Write([]byte("User Creating endpoint"))
-	var payload dto.CreateUserDto
-	uc.UserService.CreateUser(&payload)
+	payload := r.Context().Value("payload").(dto.CreateUserDto)
+
+	fmt.Println("Payload received:", payload)
+
+	user, err := uc.UserService.CreateUser(&payload)
+
+	if err != nil {
+		utils.WriteJsonErrorResponse(w, http.StatusInternalServerError, "Failed to create user", err)
+		return
+	}
+
+	utils.WriteJsonSuccessResponse(w, http.StatusCreated, "User created successfully", user)
+	fmt.Println("User created successfully:", user)
 }
 func (uc *UserController) LoginUser(w http.ResponseWriter, r *http.Request) {
 	fmt.Println("Login User Service is called")
