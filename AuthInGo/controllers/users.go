@@ -24,7 +24,8 @@ func (uc *UserController) GetUserById(w http.ResponseWriter, r *http.Request) {
 }
 func (uc *UserController) CreateUser(w http.ResponseWriter, r *http.Request) {
 	w.Write([]byte("User Creating endpoint"))
-	uc.UserService.CreateUser()
+	var payload dto.CreateUserDto
+	uc.UserService.CreateUser(&payload)
 }
 func (uc *UserController) LoginUser(w http.ResponseWriter, r *http.Request) {
 	fmt.Println("Login User Service is called")

@@ -13,7 +13,7 @@ import (
 
 type UserService interface {
 	GetUserById(id string) (*models.User, error)
-	CreateUser() error
+	CreateUser(payload *dto.CreateUserDto) error
 	LoginUser(payload *dto.LoginUserRequestDTO) (string,error)
 }
 type UserServiceImpl struct {
@@ -34,14 +34,13 @@ func (u *UserServiceImpl) GetUserById(id string) (*models.User, error) {
 	}
 	return user, nil
 }
-func (u *UserServiceImpl) CreateUser() error{
-	pwd:="abx123"
-	hashpwd,herr:=utils.Hashedpasswords(pwd)
+func (u *UserServiceImpl) CreateUser(payload *dto.CreateUserDto) error{
+	hashpwd,herr:=utils.Hashedpasswords(payload.Password)
 	if herr != nil {
 		fmt.Println("Error while creating the user")
 		return herr
 	}
-	u.userRepository.Create("Yahoo","yahoo@gmail.com",hashpwd)
+	u.userRepository.Create(payload.Username,payload.Email,hashpwd)
 	return nil
 }
 func (u *UserServiceImpl)LoginUser(payload *dto.LoginUserRequestDTO) (string,error){
