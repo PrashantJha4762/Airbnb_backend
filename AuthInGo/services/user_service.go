@@ -13,7 +13,7 @@ import (
 
 type UserService interface {
 	GetUserById(id string) (*models.User, error)
-	CreateUser(payload *dto.CreateUserDto) error
+	CreateUser(payload *dto.CreateUserDto) (*models.User,error)
 	LoginUser(payload *dto.LoginUserRequestDTO) (string,error)
 }
 type UserServiceImpl struct {
@@ -34,14 +34,25 @@ func (u *UserServiceImpl) GetUserById(id string) (*models.User, error) {
 	}
 	return user, nil
 }
-func (u *UserServiceImpl) CreateUser(payload *dto.CreateUserDto) error{
-	hashpwd,herr:=utils.Hashedpasswords(payload.Password)
-	if herr != nil {
-		fmt.Println("Error while creating the user")
-		return herr
+func (u *UserServiceImpl) CreateUser(payload *dto.CreateUserDto) (*models.User, error) {
+	fmt.Println("Creating user in UserService")
+
+	// Step 1. Hash the password using utils.HashPassword
+	hashedPassword, err := utils.Hashedpasswords(payload.Password)
+	if err != nil {
+		fmt.Println("Error hashing password:", err)
+		return nil, err
 	}
-	u.userRepository.Create(payload.Username,payload.Email,hashpwd)
-	return nil
+
+	// Step 2. Call the repository to create the user
+	user, err := u.userRepository.Create(payload.Username, payload.Email, hashedPassword)
+	if err != nil {
+		fmt.Println("Error creating user:", err)
+		return nil, err
+	}
+
+	// Step 3. Return the created user
+	return user, nil
 }
 func (u *UserServiceImpl)LoginUser(payload *dto.LoginUserRequestDTO) (string,error){
 	fmt.Println("Login user in UserService")

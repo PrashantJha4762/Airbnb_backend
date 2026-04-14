@@ -8,7 +8,7 @@ import (
 
 type UserRepository interface {
 	GetByID(id string) (*models.User, error)
-	Create(username string,email string, password string) error
+	Create(username string,email string, password string)(*models.User,error)
 	GetAll() ([]*models.User, error)
 	DeleteById(id int64) error
 	GetByEmail(email string) (*models.User, error)
@@ -18,24 +18,30 @@ type UserRepositoryImpl struct {
 	db *sql.DB
 }
 
-func (u *UserRepositoryImpl) Create(username string, email string,hashpwd string) error {
-	query := "INSERT INTO users(username,email,password) VALUES(?,?,?)"
-	result, err := u.db.Exec(query,username,email,hashpwd)
+func (u *UserRepositoryImpl) Create(username string, email string, hashedPassword string) (*models.User, error) {
+	query := "INSERT INTO users (username, email, password) VALUES (?, ?, ?)"
+	result, err := u.db.Exec(query, username, email, hashedPassword)
+
 	if err != nil {
-		fmt.Println("Error inserting user", err)
-		return err
+		fmt.Println("Error creating user:", err)
+		return nil, err
 	}
-	rowAffected, rowError := result.RowsAffected()
-	if rowError != nil {
-		fmt.Println("Error getting rows effected", rowError)
-		return rowError
+
+	lastInsertID, rowErr := result.LastInsertId()
+	if rowErr != nil {
+		fmt.Println("Error getting last insert ID:", rowErr)
+		return nil, rowErr
 	}
-	if rowAffected == 0 {
-		fmt.Println("No rows were effected")
-		return nil
+
+	user := &models.User{
+		Id:       lastInsertID,
+		Username: username,
+		Email:    email,
 	}
-	fmt.Println("Users created successfully", rowAffected)
-	return nil
+
+	fmt.Println("User created successfully:", user)
+
+	return user, nil
 }
 
 func (u *UserRepositoryImpl) GetByID(id string) (*models.User, error) {
